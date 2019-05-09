@@ -1,0 +1,36 @@
+{
+  "name": "js-3d-viewer",
+  "version": "1.0.0",
+  "description": "JS 3D viewer using Three.js",
+  "main": "app.js",
+  "scripts": {
+    "build": "webpack",
+    "server": "node server.js"
+  },
+  "author": "Gian Salay",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.7.5",
+    "three": "0.104.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "babel-loader": "^8.0.4",
+    "clean-webpack-plugin": "^2.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "copy-webpack-plugin": "5.0.3",
+    "express": "^4.15.3",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-middleware": "^3.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chuvvie/js-3d-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Chuvvie/js-3d-viewer/issues"
+  },
+  "homepage": "https://github.com/Chuvvie/js-3d-viewer#readme"
+}

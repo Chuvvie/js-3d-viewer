@@ -1,0 +1,12 @@
+<script src="<%= htmlWebpackPlugin.files.chunks['js-3d-viewer'].entry %>"></script>
+<script>
+    var app = angular.module('TestModule', ['js-3d-viewer'])
+        .controller('TestController', function ($scope) {
+        });
+
+</script>
+<div ng-app="TestModule">
+    <div ng-controller="TestController">
+        <three-dimensional-viewer file="assets/sample.stl" window-width="500" window-height="500" scale="0.5"></three-dimensional-viewer>
+    </div>
+</div>
