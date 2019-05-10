@@ -58,7 +58,9 @@
 
                         // Create Container
                         container = document.createElement('div');
-                        document.body.appendChild(container);
+						container.setAttribute("id", "viewer");
+						var div = document.getElementsByTagName("three-dimensional-viewer");
+                        div[0].appendChild(container);
 
                         // Camera Settings
                         camera = new THREE.PerspectiveCamera(50, (scope.windowWidth() ? scope.windowWidth() : defaultWidth) / (scope.windowHeight() ? scope.windowHeight() : defaultHeight), 1, 300);
@@ -130,9 +132,9 @@
                     }
 
                     function onWindowResize() {
-                        camera.aspect = window.innerWidth / window.innerHeight;
-                        camera.updateProjectionMatrix();
-                        renderer.setSize(window.innerWidth, window.innerHeight);
+						var element = document.getElementById('viewer');
+                        camera.aspect = element.lastChild.clientWidth / element.lastChild.clientHeight ;
+                        camera.updateProjectionMatrix();						
                     }
 
                     function animate() {
