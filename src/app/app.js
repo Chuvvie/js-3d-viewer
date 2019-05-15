@@ -1,3 +1,4 @@
+
 (function () {
     'use strict';
 
@@ -79,8 +80,14 @@
 
                         if (objToView) {
                             stlLoader.load(objToView, function (geometry) {
-                                geometry.center()
+                                geometry.center();
+                                
                                 var material = new THREE.MeshPhongMaterial({ color: 0xcd8658, specular: 0x111111, shininess: 100 });
+                                
+                                if (geometry.hasColors) {
+                                    material = new THREE.MeshPhongMaterial({ opacity: geometry.alpha, vertexColors: THREE.VertexColors });
+                                }
+
                                 material.side = THREE.DoubleSide;
                                 var mesh = new THREE.Mesh(geometry, material);
                                 mesh.scale.set((scope.scale() ? scope.scale() : defaultScale), (scope.scale() ? scope.scale() : defaultScale), (scope.scale() ? scope.scale() : defaultScale));
