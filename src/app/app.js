@@ -139,9 +139,11 @@
                     }
 
                     function onWindowResize() {
-						var element = document.getElementById('viewer');
-                        camera.aspect = element.lastChild.clientWidth / element.lastChild.clientHeight ;
-                        camera.updateProjectionMatrix();						
+                        var element = document.getElementById('viewer');
+                        if(element){
+                            camera.aspect = element.lastChild.clientWidth / element.lastChild.clientHeight ;
+                            camera.updateProjectionMatrix();	
+                        }        					
                     }
 
                     function animate() {
