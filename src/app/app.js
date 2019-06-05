@@ -87,11 +87,6 @@
                         container.style.height = (scope.windowHeight() ? scope.windowHeight() : defaultHeight);
                         div[0].appendChild(container);  
                         
-                        if(scope.showControls()){
-                         
-                        }
-      
-
                         // Camera Settings
                         camera = new THREE.PerspectiveCamera(50, (scope.windowWidth() ? scope.windowWidth() : defaultWidth) / (scope.windowHeight() ? scope.windowHeight() : defaultHeight), 1, 300);
                         camera.position.set((scope.positionX() ? scope.positionX() : defaultPositionX), (scope.positionY() ? scope.positionY() : defaultPositionY), (scope.positionZ() ? scope.positionZ() : defaultPositionZ));
