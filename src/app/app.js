@@ -13,9 +13,10 @@
     require('three/examples/js/loaders/STLLoader');
 
     var Stats = require('three/examples/js/libs/stats.min.js');
+    var Dat = require('three/examples/js/libs/dat.gui.min.js');
 
     angular.module(MODULE_NAME, [])
-        .directive('threeDimensionalViewer',['threeDimensionalViewerService', function (threeDimensionalViewerService) {
+        .directive('threeDimensionalViewer', ['threeDimensionalViewerService', function (threeDimensionalViewerService) {
             return {
                 scope: {
                     windowWidth: "&",
@@ -27,11 +28,14 @@
                     targetX: "&",
                     targetY: "&",
                     targetZ: "&",
+                    background: "&",
+                    modelColor: "&",
+                    showControls: "&",
                     file: "@file"
                 },
                 link: function (scope, element, attributes) {
 
-                    var container, stats;
+                    var container, guiContainer, isRenderingText, stats;
                     var camera, cameraTarget, scene, renderer, raycaster;
                     var mouse = new THREE.Vector2();
 
@@ -48,7 +52,10 @@
                     var defaultTargetY = 30;
                     var defaultTargetZ = 0;
 
+                    var defaultBackground = '#C4C4C7';
+                    var defaultModelColor = '#CD8658';
                     var defaultScale = 0.5;
+
                     init();
                     animate();
 
@@ -60,10 +67,30 @@
                         }
 
                         // Create Container
+
+                        var div = document.getElementsByTagName("three-dimensional-viewer");
+
+                        isRenderingText = document.createElement("div");
+                        isRenderingText.appendChild(document.createTextNode("Rendering..."));
+
+                        isRenderingText.style.position = 'absolute';
+                        isRenderingText.style.paddingLeft = (scope.windowWidth() ? (scope.windowWidth() / 2) - (scope.windowWidth() / 7) : (defaultWidth / 2) - (defaultWidth / 7)) + 'px';
+                        isRenderingText.style.paddingTop = (scope.windowHeight() ? (scope.windowHeight() / 2) - 40 : (defaultHeight / 2) - 40) + 'px';
+                        isRenderingText.style.fontSize = (scope.windowWidth() ? (scope.windowWidth() / 16) : (defaultWidth / 16)) + 'px';
+                        isRenderingText.style.fontFamily = 'Helvetica';
+                        div[0].appendChild(isRenderingText);
+
+                        
                         container = document.createElement('div');
                         container.setAttribute("id", "viewer");
-                        var div = document.getElementsByTagName("three-dimensional-viewer");
-                        div[0].appendChild(container);
+                        container.style.width = (scope.windowWidth() ? scope.windowWidth() : defaultWidth);
+                        container.style.height = (scope.windowHeight() ? scope.windowHeight() : defaultHeight);
+                        div[0].appendChild(container);  
+                        
+                        if(scope.showControls()){
+                         
+                        }
+      
 
                         // Camera Settings
                         camera = new THREE.PerspectiveCamera(50, (scope.windowWidth() ? scope.windowWidth() : defaultWidth) / (scope.windowHeight() ? scope.windowHeight() : defaultHeight), 1, 300);
@@ -71,23 +98,32 @@
 
                         // Scene
                         scene = new THREE.Scene();
-                        scene.background = new THREE.Color(0xC4C4C7);
+                        scene.background = new THREE.Color((scope.background() ? scope.background() : defaultBackground));
+
+
+                        // Load Manager
+                        var manager = new THREE.LoadingManager();
+
+                        manager.onLoad = function () {
+                            div[0].removeChild(isRenderingText);
+                        };
 
                         // Loaders
-                        var stlLoader = new THREE.STLLoader();
-
+                        var stlLoader = new THREE.STLLoader(manager);
                         var objToView = scope.file;
 
-                        // Binary files
-
+                        // Load files
                         if (objToView) {
                             stlLoader.load(objToView, function (geometry) {
                                 geometry.center();
 
-                                var material = new THREE.MeshPhongMaterial({ color: 0xcd8658, specular: 0x111111, shininess: 0 });
+                                var material = new THREE.MeshPhongMaterial({ color: defaultModelColor, specular: 0x111111, shininess: 0 });
 
                                 if (geometry.hasColors) {
-                                    material = new THREE.MeshPhongMaterial({ opacity: geometry.alpha, vertexColors: THREE.VertexColors });
+                                    material = new THREE.MeshPhongMaterial({ opacity: geometry.alpha, vertexColors: THREE.VertexColors, shininess: 0 });
+                                }
+                                else if (scope.modelColor()) {
+                                    material = new THREE.MeshPhongMaterial({ color: scope.modelColor(), specular: 0x111111, shininess: 0 });
                                 }
 
                                 material.side = THREE.DoubleSide;
@@ -98,13 +134,15 @@
                                 resizeObject(camera, mesh);
                                 scene.add(mesh);
 
-                                threeDimensionalViewerService.registerDispose( function () {
+                                threeDimensionalViewerService.registerDispose(function () {
                                     var object = scene.getObjectByName("stlObject");
                                     scene.remove(object);
                                     disposeObject(object);
                                 });
                             });
                         }
+
+
 
                         // Lights
                         scene.add(new THREE.HemisphereLight(0x443333, 0x111122));
@@ -121,7 +159,7 @@
                         renderer.setSize(scope.windowWidth() ? scope.windowWidth() : defaultWidth, scope.windowHeight() ? scope.windowHeight() : defaultHeight);
                         renderer.gammaInput = true;
                         renderer.gammaOutput = true;
-                        container.appendChild(renderer.domElement);
+                      
 
                         // Stats
                         //stats = new Stats();
@@ -131,6 +169,37 @@
                         var controls = new THREE.OrbitControls(camera, renderer.domElement);
                         controls.minDistance = 0;
                         controls.maxDistance = 200;
+
+                        //GUI Controls
+                        if(scope.showControls()){
+                            var effectController = {
+                                Zoom: controls.target.distanceTo(controls.object.position),
+                            };
+    
+                            var matChanger = function () {
+                                var zoomDistance = effectController.Zoom;
+                                var currentDistance = camera.position.length();
+                                var factor = zoomDistance / currentDistance;
+    
+                                camera.position.x *= factor;
+                                camera.position.y *= factor;
+                                camera.position.z *= factor;
+                            };
+    
+                            guiContainer = document.createElement('div');
+                            guiContainer.setAttribute("id", "gui-container");
+                            container.appendChild(guiContainer);
+    
+                            var GUI = new Dat.GUI({ autoPlace: false });
+                            GUI.domElement.id = 'gui-controls';
+                            guiContainer.style.position = 'absolute';
+                            guiContainer.appendChild(GUI.domElement);
+    
+                            GUI.add(effectController, 'Zoom', 1, 135, 0.01).onChange(matChanger);
+                            matChanger();    
+                        }
+                    
+                        container.appendChild(renderer.domElement);
 
                         // Axes Helper
                         //var axesHelper = new THREE.AxesHelper(5);
@@ -211,19 +280,19 @@
                                 if (node.material.specularMap) node.material.specularMap.dispose();
                                 if (node.material.envMap) node.material.envMap.dispose();
 
-                                node.material.dispose(); 
+                                node.material.dispose();
                             }
 
                             if (node.textures) {
                                 node.textures.dispose();
                             }
                         }
-                    } 
+                    }
                 }
             };
         }])
         .service('threeDimensionalViewerService', function () {
-            function disposeViewer() {}
+            function disposeViewer() { }
 
             function registerDispose(disposeFunc) {
                 this.disposeViewer = disposeFunc;
