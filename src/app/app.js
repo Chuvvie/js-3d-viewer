@@ -111,7 +111,7 @@
                         if (objToView) {
                             stlLoader.load(objToView, function (geometry) {
                                 geometry.center();
-
+                                geometry.computeFaceNormals();
                                 var material = new THREE.MeshPhongMaterial({ color: defaultModelColor, specular: 0x111111, shininess: 0 });
 
                                 if (geometry.hasColors) {
@@ -139,11 +139,16 @@
 
 
 
+                        var lightFactor = 0.6;
+                        var lightDistance = 30;
                         // Lights
                         scene.add(new THREE.HemisphereLight(0x443333, 0x111122));
-                        addLight(-10, -1, -1, 0xffffff, 0.8);
-                        addLight(1, 1, 1, 0xffffff, 0.8);
-                        addLight(0.5, 1, - 1, 0xffffff, 0.8);
+                        addLight(-lightDistance, -1, -1, 0xffffff, lightFactor);
+                        addLight(1, lightDistance, 1, 0xffffff, lightFactor);
+                        addLight(lightDistance, 1, - 1, 0xffffff, lightFactor);
+                        addLight(1, -lightDistance, 1, 0xffffff, lightFactor);
+                        addLight(1, 1, - lightDistance, 0xffffff, lightFactor);
+                        addLight(1, 1, lightDistance, 0xffffff, lightFactor);
 
                         // raycaster
                         raycaster = new THREE.Raycaster();
@@ -196,6 +201,10 @@
                     
                         container.appendChild(renderer.domElement);
 
+                        //Helpers
+
+                      
+
                         // Axes Helper
                         //var axesHelper = new THREE.AxesHelper(5);
                         //scene.add(axesHelper);
@@ -209,6 +218,10 @@
                         var directionalLight = new THREE.DirectionalLight(color, intensity);
                         directionalLight.position.set(x, y, z);
                         scene.add(directionalLight);
+
+                          //Light Helper
+                        
+                       // scene.add(new THREE.PointLightHelper(directionalLight, 1) );
                     }
 
                     function onWindowResize() {
