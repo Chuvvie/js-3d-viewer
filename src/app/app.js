@@ -139,16 +139,22 @@
 
 
 
-                        var lightFactor = 0.6;
+                        var lightFactor = 0.7;
+                        var shadowLightFactor = 0.3;
                         var lightDistance = 30;
                         // Lights
                         scene.add(new THREE.HemisphereLight(0x443333, 0x111122));
+                        // z
                         addLight(-lightDistance, -1, -1, 0xffffff, lightFactor);
-                        addLight(1, lightDistance, 1, 0xffffff, lightFactor);
                         addLight(lightDistance, 1, - 1, 0xffffff, lightFactor);
-                        addLight(1, -lightDistance, 1, 0xffffff, lightFactor);
+                        //top
+                        addLight(1, lightDistance, 1, 0xffffff, shadowLightFactor);
+                       
+                        //bottom   
+                        addLight(1, -lightDistance, 1, 0xffffff, shadowLightFactor);
+
                         addLight(1, 1, - lightDistance, 0xffffff, lightFactor);
-                        addLight(1, 1, lightDistance, 0xffffff, lightFactor);
+                        addLight(1, 1, lightDistance, 0xffffff, shadowLightFactor);
 
                         // raycaster
                         raycaster = new THREE.Raycaster();
@@ -203,8 +209,6 @@
 
                         //Helpers
 
-                      
-
                         // Axes Helper
                         //var axesHelper = new THREE.AxesHelper(5);
                         //scene.add(axesHelper);
@@ -219,9 +223,9 @@
                         directionalLight.position.set(x, y, z);
                         scene.add(directionalLight);
 
-                          //Light Helper
+                        //Light Helper
                         
-                       // scene.add(new THREE.PointLightHelper(directionalLight, 1) );
+                        //scene.add(new THREE.PointLightHelper(directionalLight, 1) );
                     }
 
                     function onWindowResize() {
